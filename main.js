@@ -1,7 +1,6 @@
 x = 0;
 y = 0;
 draw_circle = "";
-draw_rect = "";
 
 var SpeechRecognition = window.webkitSpeechRecognition;
 
@@ -18,34 +17,41 @@ recognition.onresult = function(event) {
     var content = event.results[0][0].transcript;
 
     document.getElementById("status").innerHTML = "The speech has been recognized as: " + content;
-        if (content == "circle." || content == "Circle.") {
-            x = Math.floor(Math.random() * 900);
-            y = Math.floor(Math.random() * 600);
-            document.getElementById("status").innerHTML = "Started drawing circle";
-            draw_circle = "set";
-        }
-        if (content == "rectangle." || content == "Rectangle.") {
-            x = Math.floor(Math.random() * 900);
-            y = Math.floor(Math.random() * 600);
-            document.getElementById("status").innerHTML = "Started drawing rectangle";
-            draw_rect = "set";
-        }
+    
+    to_number = Number(content); 
+    if (Number.isInteger(to_number)) { 
+        document.getElementById("status").innerHTML = "Started drawing circles"; 
+        draw_circle = "set"; 
+    } 
+    else { 
+        document.getElementById("status").innerHTML = "The speech has not recognized a number "; 
+    }
 }
 
 function setup() {
     canvas = createCanvas(900, 600);
+    canvas.center()
+}
+
+function speak() { 
+    var synth = window.speechSynthesis; 
+    var utterThis = new SpeechSynthesisUtterance(speak_data); 
+    synth.speak(utterThis); 
+    speak_data = ""; 
 }
 
 function draw() {
     if (draw_circle == "set") {
-        radius = Math.floor(Math.random() * 100);
-        circle(x, y, radius);
+        for(var i = 1 ; i <= to_number; i++) { 
+            x = Math.floor(Math.random() * 700); 
+            y = Math.floor(Math.random() * 400); 
+            radius = Math.floor(Math.random() * 100);
+            circle(x, y, radius);
+        }
         document.getElementById("status").innerHTML = "Circle is drawn.";
         draw_circle = "";
-    }
-    if (draw_rect == "set") {
-        rect(x, y, 70, 50);
-        document.getElementById("status").innerHTML = "Rectangle is drawn.";
-        draw_rect = "";
+        
+        speak_data = to_number + "Circles drawn"; 
+        speak();
     }
 }
